@@ -67,7 +67,7 @@ function AIModelSelector() {
 
     if (modelID) {
       try {
-        await fetch("http://localhost:8000/set_model", {
+        await fetch("https://ghost-gpt.onrender.com/set_model", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ model: modelID }),

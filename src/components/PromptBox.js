@@ -24,7 +24,7 @@ export default function PromptBox({ setMessages, user }) {
 
       try {
         const response = await fetch(
-          `http://localhost:8000/chat/history?email=${encodeURIComponent(user.email)}`
+          `https://ghost-gpt.onrender.com/chat/history?email=${encodeURIComponent(user.email)}`
         );
         const data = await response.json();
 
