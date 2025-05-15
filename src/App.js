@@ -5,6 +5,8 @@ import {
   extendTheme,
   Button,
   Avatar,
+  Flex,
+  Container,
 } from "@chakra-ui/react";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -57,100 +59,87 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <Box p={4} minH="100vh">
-        {/* Login Section */}
-        {!user ? (
-          <Box position="absolute" top="45px" right="48px" zIndex="10">
-            <GoogleLogin
-              onSuccess={handleLoginSuccess}
-              onError={() => console.log("Login Failed")}
-            />
-          </Box>
-        ) : (
-          <Box position="absolute" top="45px" right="48px" zIndex="10">
-            <Avatar name={user.name} src={user.picture} />
-            <Button
-              ml={3}
-              top="5px"
-              onClick={handleLogout}
-              colorScheme="red"
-              variant="outline"
-            >
-              Logout
-            </Button>
-          </Box>
-        )}
-
-        {/* Main Container */}
-        <Box position="relative" maxW="1200px" mx="auto" h="100vh">
-          {/* Left Sidebar */}
-          <Box
-            position="absolute"
-            top="6"
-            left="-20"
-            w="200px"
-            h="90vh"
-            bg="background.secondary"
-            p={4}
-            borderRadius="md"
-          >
-            <AIModelSelector />
-            <Box mb={8}></Box>
-            <ChatHistory />
+      <Box p={4} minH="100vh" maxW="100vw" overflow="hidden">
+        {/* Fixed width container with consistent proportions */}
+        <Container maxW="1400px" p={0} h="100vh" position="relative">
+          {/* Login Section - Fixed position relative to container */}
+          <Box position="absolute" top="45px" right="20px" zIndex="10">
+            {!user ? (
+              <GoogleLogin
+                onSuccess={handleLoginSuccess}
+                onError={() => console.log("Login Failed")}
+              />
+            ) : (
+              <Flex align="center">
+                <Avatar name={user.name} src={user.picture} />
+                <Button
+                  ml={3}
+                  onClick={handleLogout}
+                  colorScheme="red"
+                  variant="outline"
+                >
+                  Logout
+                </Button>
+              </Flex>
+            )}
           </Box>
 
-          {/* Central Chat Area */}
-          <Box
-            position="absolute"
-            top="1"
-            left="320px"
-            right="320px"
-            h="90vh"
-            px={4}
-          >
-            {/* Prompt Box */}
+          {/* Main Content Layout with Flex */}
+          <Flex h="90vh" mt={8} gap={4}>
+            {/* Left Sidebar - Fixed width */}
             <Box
-              position="relative"
-              mb={2}
-              h="50%"
-              top="360px"
-              zIndex="1"
-              width="600%"
-              left="-250%"
-              pointerEvents="none"
+              w="200px"
+              h="full"
+              bg="background.secondary"
+              p={4}
+              borderRadius="md"
+              flexShrink={0}
             >
-              <Box bg="background.chatBox">
-                <div style={{ pointerEvents: 'auto' }}>
-                  <PromptBox setMessages={setMessages} user={user} />
-                </div>
+              <AIModelSelector />
+              <Box mb={8}></Box>
+              <ChatHistory />
+            </Box>
+
+            {/* Central Chat Area - Flex grow to take available space */}
+            <Flex 
+              direction="column" 
+              flex="1" 
+              h="full" 
+              justify="space-between"
+              px={4}
+              overflowY="hidden"
+            >
+              {/* AI Response Box - Takes top part */}
+              <Box 
+                h="60%" 
+                mb={4} 
+                w="full"
+              >
+                <AIResponseBox messages={messages} />
               </Box>
-            </Box>
+              
+              {/* Prompt Box - Fixed at bottom */}
+              <Box 
+                h="40%" 
+                w="full" 
+                bg="background.chatBox"
+              >
+                <PromptBox setMessages={setMessages} user={user} />
+              </Box>
+            </Flex>
 
-            {/* AI Response Box */}
+            {/* Right Sidebar (Ads) - Fixed width */}
             <Box
-              position="relative"
-              h="50%"
-              top="-310px"
-              w="170%"
-              left="-210px"
+              w="300px"
+              h="full"
+              p={4}
+              borderRadius="md"
+              flexShrink={0}
             >
-              <AIResponseBox messages={messages} />
+              <Advertisement />
             </Box>
-          </Box>
-
-          {/* Right Sidebar (Ads) */}
-          <Box
-            position="absolute"
-            top="-4"
-            right="-10"
-            w="300px"
-            h="90vh"
-            p={4}
-            borderRadius="md"
-          >
-            <Advertisement />
-          </Box>
-        </Box>
+          </Flex>
+        </Container>
       </Box>
     </ChakraProvider>
   );
