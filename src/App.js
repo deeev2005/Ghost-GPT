@@ -5,6 +5,7 @@ import {
   extendTheme,
   Button,
   Avatar,
+  Flex,
 } from "@chakra-ui/react";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -57,7 +58,7 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <Box p={4} minH="100vh">
+      <Box p={4} minH="100vh" overflow="hidden">
         {/* Login Section */}
         {!user ? (
           <Box position="absolute" top="45px" right="48px" zIndex="10">
@@ -81,76 +82,52 @@ function App() {
           </Box>
         )}
 
-        {/* Main Container */}
-        <Box position="relative" maxW="1200px" mx="auto" h="100vh">
+        {/* Main Layout using Flex */}
+        <Flex maxW="1200px" mx="auto" h="90vh" pt={12}>
           {/* Left Sidebar */}
           <Box
-            position="absolute"
-            top="6"
-            left="-20"
             w="200px"
-            h="90vh"
             bg="background.secondary"
             p={4}
             borderRadius="md"
+            mr={4}
+            flexShrink={0}
           >
             <AIModelSelector />
-            <Box mb={8}></Box>
-            <ChatHistory />
+            <Box mt={8}>
+              <ChatHistory />
+            </Box>
           </Box>
 
-          {/* Central Chat Area */}
-          <Box
-            position="absolute"
-            top="1"
-            left="320px"
-            right="320px"
-            h="90vh"
-            px={4}
-          >
-            {/* Prompt Box */}
+          {/* Chat Area */}
+          <Flex direction="column" flex="1" px={2}>
             <Box
-              position="relative"
-              mb={2}
-              h="50%"
-              top="360px"
-              zIndex="1"
-              width="600%"
-              left="-250%"
-              pointerEvents="none"
-            >
-              <Box bg="background.chatBox">
-                <div style={{ pointerEvents: 'auto' }}>
-                  <PromptBox setMessages={setMessages} user={user} />
-                </div>
-              </Box>
-            </Box>
-
-            {/* AI Response Box */}
-            <Box
-              position="relative"
-              h="50%"
-              top="-310px"
-              w="170%"
-              left="-210px"
+              flex="1"
+              mb={4}
+              bg="background.chatBox"
+              borderRadius="md"
+              p={4}
+              overflowY="auto"
             >
               <AIResponseBox messages={messages} />
             </Box>
-          </Box>
+            <Box bg="background.chatBox" borderRadius="md" p={4}>
+              <PromptBox setMessages={setMessages} user={user} />
+            </Box>
+          </Flex>
 
           {/* Right Sidebar (Ads) */}
           <Box
-            position="absolute"
-            top="-4"
-            right="-10"
-            w="300px"
-            h="90vh"
+            w="260px"
+            ml={4}
             p={4}
             borderRadius="md"
+            flexShrink={0}
+            bg="transparent"
           >
             <Advertisement />
           </Box>
-        </Box>
+        </Flex>
       </Box>
     </ChakraProvider>
   );
