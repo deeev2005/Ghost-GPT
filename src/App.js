@@ -6,8 +6,6 @@ import {
   Button,
   Avatar,
   Flex,
-  Input,
-  IconButton,
   Text,
 } from "@chakra-ui/react";
 import { GoogleLogin } from "@react-oauth/google";
@@ -29,12 +27,22 @@ const theme = extendTheme({
       },
     },
   },
+  colors: {
+    background: {
+      primary: "#121212",
+      secondary: "#1E1E1E",
+      chatBox: "#232323",
+      accent: "#8AB4F8",
+      border: "#3A3A3A",
+      buttonBg: "#2E2E2E",
+      buttonBorder: "#3A3A3A",
+    },
+  },
 });
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
-  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -55,13 +63,6 @@ function App() {
     localStorage.removeItem("user");
   };
 
-  const handleSubmit = () => {
-    if (inputValue.trim()) {
-      setMessages([...messages, { role: "user", content: inputValue }]);
-      setInputValue("");
-    }
-  };
-
   return (
     <ChakraProvider theme={theme}>
       <Box 
@@ -79,25 +80,9 @@ function App() {
           borderRight="1px solid #2a2a2a"
           p={4}
         >
-          {/* AI Model Selector */}
-          <Box 
-            mb={6} 
-            mt={2}
-          >
-            <Button
-              variant="outline"
-              borderColor="#444"
-              borderWidth="1px"
-              borderRadius="md"
-              color="white"
-              bg="transparent"
-              _hover={{ bg: "#333" }}
-              w="full"
-              justifyContent="space-between"
-              rightIcon={<Text as="span">▼</Text>}
-            >
-              Select AI Model
-            </Button>
+          {/* AI Model Selector - Using the original component */}
+          <Box mb={6} mt={2}>
+            <AIModelSelector />
           </Box>
 
           {/* Info Button */}
@@ -114,6 +99,11 @@ function App() {
             >
               Info
             </Button>
+          </Box>
+          
+          {/* Original Chat History Component */}
+          <Box mt={8}>
+            <ChatHistory />
           </Box>
         </Box>
 
@@ -160,75 +150,54 @@ function App() {
               )}
             </Box>
 
-            {/* Ghost GPT centered text */}
-            <Flex 
-              justify="center" 
-              align="center" 
-              h="full"
-            >
-              <Text color="gray.500">Ghost GPT</Text>
-            </Flex>
+            {/* Messages display area with the original AIResponseBox */}
+            <Box h="full" w="full" position="relative">
+              {messages.length === 0 && (
+                <Flex 
+                  justify="center" 
+                  align="center" 
+                  h="full"
+                >
+                  <Text color="gray.500">Ghost GPT</Text>
+                </Flex>
+              )}
+              <AIResponseBox messages={messages} />
+            </Box>
           </Box>
 
-          {/* Message input */}
+          {/* Message input - Using the original PromptBox component */}
           <Box 
             mb={5}
             mx="auto"
             w="80%" 
+            position="relative"
+            pointerEvents="auto"
           >
-            <Flex
-              bg="#2a2a2a"
-              borderRadius="full"
-              align="center"
-              px={4}
-              py={2}
+            <Box
+              sx={{
+                ".prompt-box-wrapper": {
+                  background: "#2a2a2a",
+                  borderRadius: "full",
+                  padding: "6px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                }
+              }}
             >
-              <Input
-                flex="1"
-                border="none"
-                bg="transparent"
-                color="gray.300"
-                placeholder="Type your message..."
-                _focus={{ boxShadow: "none" }}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-              />
-              <IconButton
-                icon={<Text as="span" fontSize="xl">🐬</Text>}
-                aria-label="Send message"
-                bg="black"
-                color="white"
-                borderRadius="full"
-                size="sm"
-                onClick={handleSubmit}
-              />
-            </Flex>
+              <PromptBox setMessages={setMessages} user={user} />
+            </Box>
           </Box>
         </Box>
 
-        {/* Right sidebar */}
+        {/* Right sidebar with original Advertisement component */}
         <Box 
           w="250px" 
           h="100vh" 
           bg="#1a1a1a" 
           borderLeft="1px solid #2a2a2a"
           p={4}
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
         >
-          <Flex 
-            direction="column" 
-            align="center" 
-            justify="center"
-          >
-            <Text fontSize="md" color="pink.400" mb={2}>🚀</Text>
-            <Text color="gray.300" textAlign="center">
-              We make working<br />
-              happier
-            </Text>
-          </Flex>
+          <Advertisement />
         </Box>
       </Box>
     </ChakraProvider>
