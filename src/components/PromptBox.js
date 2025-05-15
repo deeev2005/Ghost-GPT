@@ -6,7 +6,6 @@ export default function PromptBox({ setMessages, user }) {
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef(null);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -17,21 +16,24 @@ export default function PromptBox({ setMessages, user }) {
     }
   }, [prompt]);
 
-  // ✅ Fetch previous chat messages using email
   useEffect(() => {
     const fetchMessages = async () => {
       if (!user?.email) return;
 
       try {
         const response = await fetch(
-          `https://ghost-gpt.onrender.com/chat/history?email=${encodeURIComponent(user.email)}`
+          `https://ghost-gpt.onrender.com/chat/history?email=${encodeURIComponent(
+            user.email
+          )}`
         );
         const data = await response.json();
 
-        const formattedMessages = data.map((msg) => [
-          { sender: "user", text: msg.user_message },
-          { sender: "ai", text: msg.ai_response },
-        ]).flat();
+        const formattedMessages = data
+          .map((msg) => [
+            { sender: "user", text: msg.user_message },
+            { sender: "ai", text: msg.ai_response },
+          ])
+          .flat();
 
         setMessages(formattedMessages);
       } catch (error) {
@@ -95,12 +97,11 @@ export default function PromptBox({ setMessages, user }) {
       boxShadow="md"
       border="1px solid"
       borderColor="background.border"
-      w="100%"
+      w="90%"
       maxW="700px"
-      position="absolute"
-      bottom="23px"
-      left="50%"
-      transform="translateX(-50%)"
+      mx="auto"
+      mt={4}
+      position="relative"
     >
       <HStack spacing={3} align="flex-end">
         <Textarea
