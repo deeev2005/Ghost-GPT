@@ -13,7 +13,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# ✅ Enable CORS
+# ✅ Enable CORS for all origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,7 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Serve static files (for generated images)
+# ✅ Root check endpoint
+@app.get("/")
+def read_root():
+    return {"message": "🚀 Backend is running!"}
+
+# ✅ Static image hosting
 os.makedirs("generated_images", exist_ok=True)
 app.mount("/generated_images", StaticFiles(directory="generated_images"), name="generated_images")
 
@@ -47,19 +52,21 @@ class ChatRequest(BaseModel):
     user_id: str
     email: str
 
+# ✅ Set AI model
 @app.post("/set_model")
 async def set_model(request: ModelRequest):
     global selected_model
     selected_model = request.model
     return {"message": f"Model updated to {selected_model}"}
 
+# ✅ Handle chat requests
 @app.post("/chat")
 async def chat(request: ChatRequest):
     if not selected_model:
         raise HTTPException(status_code=400, detail="No AI model selected!")
 
     try:
-        # ✅ Fetch last 20 messages for context
+        # Fetch last 20 messages for context
         context_messages = list(
             chat_collection.find({"email": request.email}).sort("timestamp", -1).limit(20)
         )
@@ -70,7 +77,7 @@ async def chat(request: ChatRequest):
             messages.append({"role": "assistant", "content": msg["ai_response"]})
         messages.append({"role": "user", "content": request.prompt})
 
-        # ✅ Handle OpenRouter chat models
+        # OpenRouter API call
         url = "https://openrouter.ai/api/v1/chat/completions"
         payload = {"model": selected_model, "messages": messages}
         headers = {
@@ -83,13 +90,11 @@ async def chat(request: ChatRequest):
         response_json = response.json()
 
         if "choices" not in response_json:
-            print("❌ Unexpected OpenRouter response:", response_json)
             raise HTTPException(status_code=500, detail="Invalid response from OpenRouter")
 
         ai_response = response_json["choices"][0]["message"]["content"]
-        print("✅ Response source: OpenRouter")
 
-        # ✅ Store chat in DB for text-based responses
+        # Save to DB
         chat_collection.insert_one({
             "model": selected_model,
             "user_message": request.prompt,
@@ -102,12 +107,11 @@ async def chat(request: ChatRequest):
         return {"response": ai_response}
 
     except requests.exceptions.RequestException as e:
-        print(f"❌ API request error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"API request failed: {str(e)}")
     except Exception as e:
-        print(f"❌ Server error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
+# ✅ Get chat history
 @app.get("/chat/history")
 async def get_chat_history(email: str = Query(...)):
     try:
@@ -121,5 +125,4 @@ async def get_chat_history(email: str = Query(...)):
             for h in history
         ]
     except Exception as e:
-        print(f"❌ Failed to fetch chat history: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch chat history.")
