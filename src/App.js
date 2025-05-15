@@ -6,7 +6,8 @@ import {
   Button,
   Avatar,
   Flex,
-  Container,
+  Input,
+  IconButton,
 } from "@chakra-ui/react";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -59,87 +60,139 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <Box p={4} minH="100vh" maxW="100vw" overflow="hidden">
-        {/* Fixed width container with consistent proportions */}
-        <Container maxW="1400px" p={0} h="100vh" position="relative">
-          {/* Login Section - Fixed position relative to container */}
-          <Box position="absolute" top="45px" right="20px" zIndex="10">
-            {!user ? (
-              <GoogleLogin
-                onSuccess={handleLoginSuccess}
-                onError={() => console.log("Login Failed")}
-              />
-            ) : (
-              <Flex align="center">
-                <Avatar name={user.name} src={user.picture} />
-                <Button
-                  ml={3}
-                  onClick={handleLogout}
-                  colorScheme="red"
-                  variant="outline"
-                >
-                  Logout
-                </Button>
-              </Flex>
-            )}
-          </Box>
-
-          {/* Main Content Layout with Flex */}
-          <Flex h="90vh" mt={8} gap={4}>
-            {/* Left Sidebar - Fixed width */}
-            <Box
-              w="200px"
-              h="full"
-              bg="background.secondary"
-              p={4}
-              borderRadius="md"
-              flexShrink={0}
-            >
+      <Box minH="100vh" width="100vw" bg="#121212" position="relative">
+        {/* Three column layout */}
+        <Flex h="100vh">
+          {/* Left sidebar */}
+          <Box 
+            w="240px" 
+            h="100vh" 
+            bg="#121212" 
+            p={4} 
+            borderRight="1px solid #333"
+          >
+            <Box mb={4}>
               <AIModelSelector />
-              <Box mb={8}></Box>
+            </Box>
+            
+            <Box mt={10}>
               <ChatHistory />
             </Box>
+          </Box>
 
-            {/* Central Chat Area - Flex grow to take available space */}
+          {/* Main chat area */}
+          <Box flex="1" position="relative" h="100vh">
+            {/* Login button at top right of middle section */}
+            <Box position="absolute" top="20px" right="20px" zIndex={10}>
+              {!user ? (
+                <Box 
+                  p={2} 
+                  borderRadius="md" 
+                  bg="white"
+                >
+                  <GoogleLogin
+                    onSuccess={handleLoginSuccess}
+                    onError={() => console.log("Login Failed")}
+                  />
+                </Box>
+              ) : (
+                <Flex align="center">
+                  <Avatar size="sm" name={user.name} src={user.picture} />
+                  <Button
+                    ml={3}
+                    size="sm"
+                    onClick={handleLogout}
+                    colorScheme="red"
+                    variant="outline"
+                  >
+                    Logout
+                  </Button>
+                </Flex>
+              )}
+            </Box>
+            
+            {/* Message display area */}
+            <Box 
+              pt="70px" 
+              pb="80px" 
+              px={6} 
+              h="100%" 
+              overflowY="auto"
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Box textAlign="center" color="gray.500">
+                Ghost GPT
+              </Box>
+              <AIResponseBox messages={messages} />
+            </Box>
+            
+            {/* Input area fixed at bottom */}
+            <Box 
+              position="absolute" 
+              bottom={4} 
+              left={0} 
+              right={0} 
+              px={6}
+            >
+              <Box 
+                bg="#232323" 
+                borderRadius="full" 
+                p={2} 
+                display="flex" 
+                alignItems="center"
+              >
+                <Input 
+                  flex="1"
+                  border="none"
+                  bg="transparent"
+                  placeholder="Type your message..."
+                  _focus={{ boxShadow: "none" }}
+                  color="white"
+                />
+                <IconButton
+                  icon={<Box as="span" fontSize="xl">🚀</Box>}
+                  bg="black"
+                  color="white"
+                  borderRadius="full"
+                  size="sm"
+                  ml={2}
+                />
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Right sidebar */}
+          <Box 
+            w="260px" 
+            h="100vh" 
+            bg="#121212" 
+            p={4} 
+            borderLeft="1px solid #333"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+          >
             <Flex 
               direction="column" 
-              flex="1" 
-              h="full" 
-              justify="space-between"
-              px={4}
-              overflowY="hidden"
+              align="center" 
+              justify="center"
+              color="gray.400"
+              p={4}
             >
-              {/* AI Response Box - Takes top part */}
-              <Box 
-                h="60%" 
-                mb={4} 
-                w="full"
-              >
-                <AIResponseBox messages={messages} />
+              <Box as="span" fontSize="xl" mb={2}>
+                🚀
               </Box>
-              
-              {/* Prompt Box - Fixed at bottom */}
-              <Box 
-                h="40%" 
-                w="full" 
-                bg="background.chatBox"
-              >
-                <PromptBox setMessages={setMessages} user={user} />
+              <Box textAlign="center">
+                We make working<br />
+                happier
               </Box>
             </Flex>
-
-            {/* Right Sidebar (Ads) - Fixed width */}
-            <Box
-              w="300px"
-              h="full"
-              p={4}
-              borderRadius="md"
-              flexShrink={0}
-            >
-              <Advertisement />
-            </Box>
-          </Flex>
-        </Container>
+          </Box>
+        </Flex>
       </Box>
     </ChakraProvider>
   );
