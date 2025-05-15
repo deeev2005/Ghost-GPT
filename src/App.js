@@ -8,6 +8,7 @@ import {
   Flex,
   Input,
   IconButton,
+  Text,
 } from "@chakra-ui/react";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -20,17 +21,12 @@ import AIResponseBox from "./components/AIResponseBox";
 
 const theme = extendTheme({
   styles: {
-    global: { body: { bg: "#121212", color: "white", overflow: "hidden" } },
-  },
-  colors: {
-    background: {
-      primary: "#121212",
-      secondary: "#1E1E1E",
-      chatBox: "#232323",
-      accent: "#8AB4F8",
-      border: "#3A3A3A",
-      buttonBg: "#2E2E2E",
-      buttonBorder: "#3A3A3A",
+    global: { 
+      body: { 
+        bg: "#121212", 
+        color: "white", 
+        overflow: "hidden",
+      },
     },
   },
 });
@@ -38,6 +34,7 @@ const theme = extendTheme({
 function App() {
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -58,38 +55,91 @@ function App() {
     localStorage.removeItem("user");
   };
 
+  const handleSubmit = () => {
+    if (inputValue.trim()) {
+      setMessages([...messages, { role: "user", content: inputValue }]);
+      setInputValue("");
+    }
+  };
+
   return (
     <ChakraProvider theme={theme}>
-      <Box minH="100vh" width="100vw" bg="#121212" position="relative">
-        {/* Three column layout */}
-        <Flex h="100vh">
-          {/* Left sidebar */}
+      <Box 
+        bg="#121212" 
+        minH="100vh" 
+        position="relative" 
+        mx="auto"
+        display="flex"
+      >
+        {/* Left sidebar */}
+        <Box 
+          w="250px" 
+          h="100vh" 
+          bg="#1a1a1a" 
+          borderRight="1px solid #2a2a2a"
+          p={4}
+        >
+          {/* AI Model Selector */}
           <Box 
-            w="240px" 
-            h="100vh" 
-            bg="#121212" 
-            p={4} 
-            borderRight="1px solid #333"
+            mb={6} 
+            mt={2}
           >
-            <Box mb={4}>
-              <AIModelSelector />
-            </Box>
-            
-            <Box mt={10}>
-              <ChatHistory />
-            </Box>
+            <Button
+              variant="outline"
+              borderColor="#444"
+              borderWidth="1px"
+              borderRadius="md"
+              color="white"
+              bg="transparent"
+              _hover={{ bg: "#333" }}
+              w="full"
+              justifyContent="space-between"
+              rightIcon={<Text as="span">▼</Text>}
+            >
+              Select AI Model
+            </Button>
           </Box>
 
-          {/* Main chat area */}
-          <Box flex="1" position="relative" h="100vh">
-            {/* Login button at top right of middle section */}
-            <Box position="absolute" top="20px" right="20px" zIndex={10}>
+          {/* Info Button */}
+          <Box mt={6}>
+            <Button
+              variant="outline"
+              borderColor="#444"
+              borderWidth="1px"
+              borderRadius="md"
+              color="white"
+              bg="transparent"
+              _hover={{ bg: "#333" }}
+              leftIcon={<Text as="span">ℹ️</Text>}
+            >
+              Info
+            </Button>
+          </Box>
+        </Box>
+
+        {/* Main content area */}
+        <Box 
+          flex="1" 
+          display="flex" 
+          flexDirection="column" 
+          position="relative"
+          mx={4}
+        >
+          {/* AI Response Area */}
+          <Box 
+            flex="1" 
+            borderWidth="1px" 
+            borderColor="#333" 
+            borderRadius="md"
+            bg="#1a1a1a" 
+            my={4}
+            position="relative"
+            overflow="hidden"
+          >
+            {/* Login button */}
+            <Box position="absolute" top={4} right={4}>
               {!user ? (
-                <Box 
-                  p={2} 
-                  borderRadius="md" 
-                  bg="white"
-                >
+                <Box bg="white" borderRadius="md" overflow="hidden">
                   <GoogleLogin
                     onSuccess={handleLoginSuccess}
                     onError={() => console.log("Login Failed")}
@@ -97,10 +147,9 @@ function App() {
                 </Box>
               ) : (
                 <Flex align="center">
-                  <Avatar size="sm" name={user.name} src={user.picture} />
+                  <Avatar name={user.name} src={user.picture} />
                   <Button
                     ml={3}
-                    size="sm"
                     onClick={handleLogout}
                     colorScheme="red"
                     variant="outline"
@@ -110,89 +159,77 @@ function App() {
                 </Flex>
               )}
             </Box>
-            
-            {/* Message display area */}
-            <Box 
-              pt="70px" 
-              pb="80px" 
-              px={6} 
-              h="100%" 
-              overflowY="auto"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Box textAlign="center" color="gray.500">
-                Ghost GPT
-              </Box>
-              <AIResponseBox messages={messages} />
-            </Box>
-            
-            {/* Input area fixed at bottom */}
-            <Box 
-              position="absolute" 
-              bottom={4} 
-              left={0} 
-              right={0} 
-              px={6}
-            >
-              <Box 
-                bg="#232323" 
-                borderRadius="full" 
-                p={2} 
-                display="flex" 
-                alignItems="center"
-              >
-                <Input 
-                  flex="1"
-                  border="none"
-                  bg="transparent"
-                  placeholder="Type your message..."
-                  _focus={{ boxShadow: "none" }}
-                  color="white"
-                />
-                <IconButton
-                  icon={<Box as="span" fontSize="xl">🚀</Box>}
-                  bg="black"
-                  color="white"
-                  borderRadius="full"
-                  size="sm"
-                  ml={2}
-                />
-              </Box>
-            </Box>
-          </Box>
 
-          {/* Right sidebar */}
-          <Box 
-            w="260px" 
-            h="100vh" 
-            bg="#121212" 
-            p={4} 
-            borderLeft="1px solid #333"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-          >
+            {/* Ghost GPT centered text */}
             <Flex 
-              direction="column" 
+              justify="center" 
               align="center" 
-              justify="center"
-              color="gray.400"
-              p={4}
+              h="full"
             >
-              <Box as="span" fontSize="xl" mb={2}>
-                🚀
-              </Box>
-              <Box textAlign="center">
-                We make working<br />
-                happier
-              </Box>
+              <Text color="gray.500">Ghost GPT</Text>
             </Flex>
           </Box>
-        </Flex>
+
+          {/* Message input */}
+          <Box 
+            mb={5}
+            mx="auto"
+            w="80%" 
+          >
+            <Flex
+              bg="#2a2a2a"
+              borderRadius="full"
+              align="center"
+              px={4}
+              py={2}
+            >
+              <Input
+                flex="1"
+                border="none"
+                bg="transparent"
+                color="gray.300"
+                placeholder="Type your message..."
+                _focus={{ boxShadow: "none" }}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+              <IconButton
+                icon={<Text as="span" fontSize="xl">🐬</Text>}
+                aria-label="Send message"
+                bg="black"
+                color="white"
+                borderRadius="full"
+                size="sm"
+                onClick={handleSubmit}
+              />
+            </Flex>
+          </Box>
+        </Box>
+
+        {/* Right sidebar */}
+        <Box 
+          w="250px" 
+          h="100vh" 
+          bg="#1a1a1a" 
+          borderLeft="1px solid #2a2a2a"
+          p={4}
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Flex 
+            direction="column" 
+            align="center" 
+            justify="center"
+          >
+            <Text fontSize="md" color="pink.400" mb={2}>🚀</Text>
+            <Text color="gray.300" textAlign="center">
+              We make working<br />
+              happier
+            </Text>
+          </Flex>
+        </Box>
       </Box>
     </ChakraProvider>
   );
