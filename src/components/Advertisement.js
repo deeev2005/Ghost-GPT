@@ -13,7 +13,7 @@ export default function Advertisement() {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      h="580px"  // Fixed height
+      h="585px"  // Fixed height
       boxShadow="lg"  // Adds subtle elevation
       position="relative"  // Allows z-index to work
       zIndex="2"  // Places it above User Profile
