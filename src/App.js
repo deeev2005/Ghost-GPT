@@ -158,7 +158,7 @@ function App() {
           p={4}
         >
           {/* Login button moved to top of right sidebar */}
-          <Box mb={4}>
+          <Box  mt={4} mb={4}>
             {!user ? (
               <Box bg="white" borderRadius="md" overflow="hidden">
                 <GoogleLogin
