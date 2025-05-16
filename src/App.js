@@ -84,22 +84,6 @@ function App() {
           <Box mb={6} mt={2}>
             <AIModelSelector />
           </Box>
-
-          {/* Info Button */}
-          <Box mt={6}>
-            <Button
-              variant="outline"
-              borderColor="#444"
-              borderWidth="1px"
-              borderRadius="md"
-              color="white"
-              bg="transparent"
-              _hover={{ bg: "#333" }}
-              leftIcon={<Text as="span">ℹ️</Text>}
-            >
-              Info
-            </Button>
-          </Box>
           
           {/* Original Chat History Component */}
           <Box mt={8}>
@@ -189,9 +173,9 @@ function App() {
           </Box>
         </Box>
 
-        {/* Right sidebar with original Advertisement component */}
+        {/* Right sidebar with original Advertisement component - adjusted width */}
         <Box 
-          w="250px" 
+          w="240px" 
           h="100vh" 
           bg="#1a1a1a" 
           borderLeft="1px solid #2a2a2a"
