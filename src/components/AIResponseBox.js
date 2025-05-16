@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from "react";
 import { Box, Text, Flex, IconButton, useToast, Image } from "@chakra-ui/react";
 import { CopyIcon } from "@chakra-ui/icons";
 import ReactMarkdown from "react-markdown";
+import { InlineMath, BlockMath } from "react-katex";
+import "katex/dist/katex.min.css";
 
 const AIResponseBox = ({ messages }) => {
   const messagesEndRef = useRef(null);
@@ -22,6 +24,24 @@ const AIResponseBox = ({ messages }) => {
     });
   };
 
+  const renderers = {
+    p: ({ node, children }) => {
+      const content = children.join("");
+      const isBlockMath = /^\$\$.*\$\$$/.test(content);
+      const isInlineMath = /^\$.*\$/.test(content);
+
+      if (isBlockMath) {
+        const math = content.replace(/^\$\$|\$\$$/g, "");
+        return <BlockMath math={math} />;
+      } else if (isInlineMath) {
+        const math = content.replace(/^\$|\$$/g, "");
+        return <InlineMath math={math} />;
+      } else {
+        return <Text fontSize="sm" mb={1}>{children}</Text>;
+      }
+    }
+  };
+
   return (
     <Box
       w="100%"
@@ -31,13 +51,13 @@ const AIResponseBox = ({ messages }) => {
       borderRadius="md"
       border="1px solid"
       borderColor="background.border"
-      minH="655px"  // Increased from 600px to 700px
-      maxH="655px"  // Increased from 510px to 710px
+      minH="655px"
+      maxH="655px"
       overflowY="auto"
       display="flex"
       flexDirection="column"
       gap={2}
-      mt={0}  // Reduced from 10 to 2 to ensure it grows from the top
+      mt={0}
       sx={{
         "&::-webkit-scrollbar": { width: "8px" },
         "&::-webkit-scrollbar-track": { background: "background.secondary", borderRadius: "8px" },
@@ -65,16 +85,13 @@ const AIResponseBox = ({ messages }) => {
             >
               {msg.sender === "ai" ? (
                 <Box position="relative">
-                  <ReactMarkdown components={{
-                    p: ({ node, ...props }) => <Text fontSize="sm" mb={1} {...props} />,
-                  }}>
+                  <ReactMarkdown components={renderers}>
                     {msg.text}
                   </ReactMarkdown>
 
-                  {/* Check if the response contains an image */}
                   {msg.image && (
                     <Image
-                      src={msg.image}  // If it's a URL or base64 string
+                      src={msg.image}
                       alt="Generated Image"
                       maxW="100%"
                       mt={2}
