@@ -98,7 +98,7 @@ export default function PromptBox({ setMessages, user }) {
       w="100%"
       maxW="700px"
       position="absolute"
-      bottom="-10px"
+      bottom="-30px"
       left="50%"
       transform="translateX(-50%)"
     >
