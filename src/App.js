@@ -174,7 +174,7 @@ function App() {
                   onClick={handleLogout}
                   colorScheme="red"
                   variant="outline"
-                  size="sm"
+                  size="md"
                 >
                   Logout
                 </Button>
