@@ -31,13 +31,13 @@ const AIResponseBox = ({ messages }) => {
       borderRadius="md"
       border="1px solid"
       borderColor="background.border"
-      minH="600px"
-      maxH="510px"
+      minH="635px"  // Increased from 600px to 700px
+      maxH="635px"  // Increased from 510px to 710px
       overflowY="auto"
       display="flex"
       flexDirection="column"
       gap={2}
-      mt={10}
+      mt={1}  // Reduced from 10 to 2 to ensure it grows from the top
       sx={{
         "&::-webkit-scrollbar": { width: "8px" },
         "&::-webkit-scrollbar-track": { background: "background.secondary", borderRadius: "8px" },
