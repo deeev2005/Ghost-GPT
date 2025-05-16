@@ -173,7 +173,7 @@ function App() {
                   ml={3}
                   onClick={handleLogout}
                   colorScheme="red"
-                  left="-1px" 
+                  left="5px" 
                   variant="outline"
                   size="md"
                 >
