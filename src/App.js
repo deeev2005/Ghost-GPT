@@ -81,7 +81,7 @@ function App() {
           p={4}
         >
           {/* AI Model Selector - Using the original component */}
-          <Box mb={6} mt={4}>
+          <Box mb={6} mt={5}>
             <AIModelSelector />
           </Box>
           
@@ -158,7 +158,7 @@ function App() {
           p={4}
         >
           {/* Login button moved to top of right sidebar */}
-          <Box  mt={4} mb={4}>
+          <Box  mt={5} mb={4}>
             {!user ? (
               <Box bg="white" borderRadius="md" overflow="hidden">
                 <GoogleLogin
