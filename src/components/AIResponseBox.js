@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import { Box, Text, Flex, IconButton, useToast, Image } from "@chakra-ui/react";
+import {
+  Box, Text, Flex, IconButton, useToast, Image
+} from "@chakra-ui/react";
 import { CopyIcon } from "@chakra-ui/icons";
 import ReactMarkdown from "react-markdown";
-import { InlineMath, BlockMath } from "react-katex";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 
 const AIResponseBox = ({ messages }) => {
@@ -22,27 +25,6 @@ const AIResponseBox = ({ messages }) => {
       isClosable: true,
       position: "top-right",
     });
-  };
-
-  const renderers = {
-    p: ({ node, children }) => {
-      const content = Array.isArray(children)
-        ? children.map(child => (typeof child === 'string' ? child : '')).join('')
-        : typeof children === 'string' ? children : '';
-
-      const isBlockMath = /^\$\$.*\$\$$/.test(content);
-      const isInlineMath = /^\$.*\$/.test(content);
-
-      if (isBlockMath) {
-        const math = content.replace(/^\$\$|\$\$$/g, "");
-        return <BlockMath math={math} />;
-      } else if (isInlineMath) {
-        const math = content.replace(/^\$|\$$/g, "");
-        return <InlineMath math={math} />;
-      } else {
-        return <Text fontSize="sm" mb={1}>{children}</Text>;
-      }
-    }
   };
 
   return (
@@ -88,7 +70,10 @@ const AIResponseBox = ({ messages }) => {
             >
               {msg.sender === "ai" ? (
                 <Box position="relative">
-                  <ReactMarkdown components={renderers}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
                     {msg.text}
                   </ReactMarkdown>
 
