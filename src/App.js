@@ -81,7 +81,7 @@ function App() {
           p={4}
         >
           {/* AI Model Selector - Using the original component */}
-          <Box mb={6} mt={2}>
+          <Box mb={6} mt={4}>
             <AIModelSelector />
           </Box>
           
