@@ -17,12 +17,12 @@ export default function Advertisement() {
       boxShadow="lg"  // Adds subtle elevation
       position="relative"  // Allows z-index to work
       zIndex="2"  // Places it above User Profile
-      w="130%"  // Ensures it takes full width
+      w="125%"  // Ensures it takes full width
       left="-16px" 
       mt={6}
     >
       <Text fontSize="md" fontWeight="bold">
-        🚀 If you don't get any response try 3-4 times and wait for 50s to restart the server
+        🚀 If you don't get any response try 3-4 times and wait for some time to restart the server
       </Text>
     </Box>
   );
