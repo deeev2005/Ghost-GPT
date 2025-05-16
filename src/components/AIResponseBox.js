@@ -25,7 +25,7 @@ const AIResponseBox = ({ messages }) => {
   return (
     <Box
       w="100%"
-      maxW="1000px"
+      maxW="1010px"
       bg="background.chatBox"
       p={2}
       borderRadius="md"
