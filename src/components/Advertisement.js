@@ -18,7 +18,7 @@ export default function Advertisement() {
       position="relative"  // Allows z-index to work
       zIndex="2"  // Places it above User Profile
       w="100%"  // Ensures it takes full width
-      left="200px" 
+      left="10px" 
       mt={6}
     >
       <Text fontSize="md" fontWeight="bold">
