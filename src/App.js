@@ -110,30 +110,6 @@ function App() {
             position="relative"
             overflow="hidden"
           >
-            {/* Login button */}
-            <Box position="absolute" top={4} right={4} zIndex={3}>
-              {!user ? (
-                <Box bg="white" borderRadius="md" overflow="hidden">
-                  <GoogleLogin
-                    onSuccess={handleLoginSuccess}
-                    onError={() => console.log("Login Failed")}
-                  />
-                </Box>
-              ) : (
-                <Flex align="center">
-                  <Avatar name={user.name} src={user.picture} />
-                  <Button
-                    ml={3}
-                    onClick={handleLogout}
-                    colorScheme="red"
-                    variant="outline"
-                  >
-                    Logout
-                  </Button>
-                </Flex>
-              )}
-            </Box>
-
             {/* Messages display area with the original AIResponseBox */}
             <Box h="full" w="full" position="relative">
               {messages.length === 0 && (
@@ -181,6 +157,31 @@ function App() {
           borderLeft="1px solid #2a2a2a"
           p={4}
         >
+          {/* Login button moved to top of right sidebar */}
+          <Box mb={4}>
+            {!user ? (
+              <Box bg="white" borderRadius="md" overflow="hidden">
+                <GoogleLogin
+                  onSuccess={handleLoginSuccess}
+                  onError={() => console.log("Login Failed")}
+                />
+              </Box>
+            ) : (
+              <Flex align="center">
+                <Avatar name={user.name} src={user.picture} />
+                <Button
+                  ml={3}
+                  onClick={handleLogout}
+                  colorScheme="red"
+                  variant="outline"
+                  size="sm"
+                >
+                  Logout
+                </Button>
+              </Flex>
+            )}
+          </Box>
+          
           <Advertisement />
         </Box>
       </Box>
