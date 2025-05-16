@@ -17,7 +17,7 @@ export default function Advertisement() {
       boxShadow="lg"  // Adds subtle elevation
       position="relative"  // Allows z-index to work
       zIndex="2"  // Places it above User Profile
-      w="125%"  // Ensures it takes full width
+      w="120%"  // Ensures it takes full width
       left="-16px" 
       mt={6}
     >
