@@ -22,7 +22,7 @@ export default function Advertisement() {
       mt={6}
     >
       <Text fontSize="md" fontWeight="bold">
-        🚀 We make working happier
+        🚀 If you don't get any response try 3-4 times and wait for 50s to restart the server
       </Text>
     </Box>
   );
