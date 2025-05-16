@@ -26,7 +26,10 @@ const AIResponseBox = ({ messages }) => {
 
   const renderers = {
     p: ({ node, children }) => {
-      const content = children.join("");
+      const content = Array.isArray(children)
+        ? children.map(child => (typeof child === 'string' ? child : '')).join('')
+        : typeof children === 'string' ? children : '';
+
       const isBlockMath = /^\$\$.*\$\$$/.test(content);
       const isInlineMath = /^\$.*\$/.test(content);
 
