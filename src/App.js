@@ -109,7 +109,7 @@ function App() {
             my={4}
             position="relative"
             overflow="hidden"
-            maxH="calc(100vh - 160px)" 
+            maxH="calc(100vh - 150px)" 
           >
             {/* Messages display area with the original AIResponseBox */}
             <Box h="full" w="full" position="relative">
