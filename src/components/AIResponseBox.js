@@ -31,7 +31,7 @@ const AIResponseBox = ({ messages }) => {
       borderRadius="md"
       border="1px solid"
       borderColor="background.border"
-      minH="600px"
+      minH="610px"
       maxH="510px"
       overflowY="auto"
       display="flex"
