@@ -111,7 +111,7 @@ function App() {
             overflow="hidden"
           >
             {/* Login button */}
-            <Box position="absolute" top={4} right={4}>
+            <Box position="absolute" top={4} right={4} zIndex={3}>
               {!user ? (
                 <Box bg="white" borderRadius="md" overflow="hidden">
                   <GoogleLogin
