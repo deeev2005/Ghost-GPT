@@ -37,7 +37,7 @@ const AIResponseBox = ({ messages }) => {
       display="flex"
       flexDirection="column"
       gap={2}
-      mt={1}  // Reduced from 10 to 2 to ensure it grows from the top
+      mt={0}  // Reduced from 10 to 2 to ensure it grows from the top
       sx={{
         "&::-webkit-scrollbar": { width: "8px" },
         "&::-webkit-scrollbar-track": { background: "background.secondary", borderRadius: "8px" },
