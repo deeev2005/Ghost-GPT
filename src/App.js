@@ -129,6 +129,7 @@ function App() {
           {/* Message input - Using the original PromptBox component */}
           <Box 
             mb={5}
+            mt={20}
             mx="auto"
             w="80%" 
             position="relative"
