@@ -50,7 +50,7 @@ const modelSections = [
     title: "💻 Coding",
     models: [
       " Deepcoder ",
-      "Olympric Coder",
+      "Microsoft Phi-4 Reasoning +",
       "DeepSeek R1",
       "DeepSeek Prover V2",
       "Meta Llama 4 Scout",
@@ -111,11 +111,12 @@ const modelSections = [
   {
     title: "🧠 Medium to Tough Coding & DSA",
     models: [
+      "OlympicCoder 32B",
       " Deepcoder ",
       "DeepSeek R1",
       "DeepSeek Prover V2",
-      "Meta Llama  Scout",
-      "Microsoft Phi-4 Reasoning +",
+      "Meta Llama  Scout"
+      
     ],
   },
   {
