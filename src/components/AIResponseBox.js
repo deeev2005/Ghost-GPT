@@ -109,7 +109,7 @@ const AIResponseBox = ({ messages }) => {
       ) : (
         <Flex flex="1" justify="center" align="center">
           <Text color="gray.500" fontSize="sm">
-            Ghost GPT
+            Ghost GPT- Your onestop for AI 😉
           </Text>
         </Flex>
       )}
