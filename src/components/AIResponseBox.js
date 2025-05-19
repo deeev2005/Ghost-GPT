@@ -33,6 +33,7 @@ const AIResponseBox = ({ messages }) => {
       maxW="1012px"
       bg="background.chatBox"
       p={2}
+      pt={3} // ✅ Add padding top
       borderRadius="md"
       border="1px solid"
       borderColor="background.border"
@@ -45,8 +46,15 @@ const AIResponseBox = ({ messages }) => {
       mt={0}
       sx={{
         "&::-webkit-scrollbar": { width: "8px" },
-        "&::-webkit-scrollbar-track": { background: "background.secondary", borderRadius: "8px" },
-        "&::-webkit-scrollbar-thumb": { background: "gray.600", borderRadius: "8px", border: "2px solid background.secondary" },
+        "&::-webkit-scrollbar-track": {
+          background: "background.secondary",
+          borderRadius: "8px"
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background: "gray.600",
+          borderRadius: "8px",
+          border: "2px solid background.secondary"
+        },
         "&::-webkit-scrollbar-thumb:hover": { background: "gray.500" },
       }}
     >
@@ -109,7 +117,7 @@ const AIResponseBox = ({ messages }) => {
       ) : (
         <Flex flex="1" justify="center" align="center">
           <Text color="gray.500" fontSize="sm">
-            Ghost GPT- Your onestop for AI 😉
+            Ghost GPT — Your one-stop for AI 😉
           </Text>
         </Flex>
       )}
