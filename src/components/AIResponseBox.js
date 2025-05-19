@@ -33,7 +33,7 @@ const AIResponseBox = ({ messages }) => {
       maxW="1012px"
       bg="background.chatBox"
       p={2}
-      pt={19} // ✅ Add padding top
+      pt={9} // ✅ Add padding top
       borderRadius="md"
       border="1px solid"
       borderColor="background.border"
