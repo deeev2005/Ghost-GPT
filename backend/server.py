@@ -41,7 +41,7 @@ chat_collection = db["ChatHistory"]
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # ✅ Default model
-
+selected_model = "nousresearch/deephermes-3-mistral-24b-preview:free"
 
 # ✅ Request Models
 class ModelRequest(BaseModel):
