@@ -86,6 +86,13 @@ async def chat(request: ChatRequest):
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=30)
+
+        if response.status_code == 429:
+            raise HTTPException(
+                status_code=429,
+                detail="API key limit reached. Please try again later or upgrade your OpenRouter plan."
+            )
+
         response.raise_for_status()
         response_json = response.json()
 
