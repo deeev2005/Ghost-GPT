@@ -40,8 +40,8 @@ chat_collection = db["ChatHistory"]
 # ✅ API Keys
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# ✅ Default model
-selected_model = "openrouter/default-model"
+# ✅ Model state (initially not set)
+selected_model = None  # No default model
 
 # ✅ Request Models
 class ModelRequest(BaseModel):
@@ -63,7 +63,7 @@ async def set_model(request: ModelRequest):
 @app.post("/chat")
 async def chat(request: ChatRequest):
     if not selected_model:
-        raise HTTPException(status_code=400, detail="No AI model selected!")
+        raise HTTPException(status_code=400, detail="No AI model selected. Please set a model before chatting.")
 
     try:
         # Fetch last 20 messages for context
