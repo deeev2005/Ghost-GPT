@@ -57,6 +57,7 @@ class ChatRequest(BaseModel):
 async def set_model(request: ModelRequest):
     global selected_model
     selected_model = request.model
+    print(f"✅ Model updated to: {selected_model}")
     return {"message": f"Model updated to {selected_model}"}
 
 # ✅ Handle chat requests
@@ -77,15 +78,21 @@ async def chat(request: ChatRequest):
             messages.append({"role": "assistant", "content": msg["ai_response"]})
         messages.append({"role": "user", "content": request.prompt})
 
+        # ✅ Debug: Show payload
+        payload = {"model": selected_model, "messages": messages}
+        print("📤 Sending to OpenRouter:", payload)
+
         # OpenRouter API call
         url = "https://openrouter.ai/api/v1/chat/completions"
-        payload = {"model": selected_model, "messages": messages}
         headers = {
             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
             "Content-Type": "application/json",
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=30)
+
+        # ✅ Debug: Print raw response
+        print("🌐 OpenRouter response:", response.status_code, response.text)
 
         if response.status_code == 429:
             raise HTTPException(
@@ -101,6 +108,9 @@ async def chat(request: ChatRequest):
 
         ai_response = response_json["choices"][0]["message"]["content"]
 
+        # ✅ Debug: Print AI response
+        print("🤖 AI response:", ai_response)
+
         # Save to DB
         chat_collection.insert_one({
             "model": selected_model,
@@ -114,8 +124,10 @@ async def chat(request: ChatRequest):
         return {"response": ai_response}
 
     except requests.exceptions.RequestException as e:
+        print("🚨 API request exception:", str(e))
         raise HTTPException(status_code=500, detail=f"API request failed: {str(e)}")
     except Exception as e:
+        print("🚨 Server error:", str(e))
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
 # ✅ Get chat history
@@ -132,4 +144,5 @@ async def get_chat_history(email: str = Query(...)):
             for h in history
         ]
     except Exception as e:
+        print("🚨 Chat history fetch error:", str(e))
         raise HTTPException(status_code=500, detail="Failed to fetch chat history.")
