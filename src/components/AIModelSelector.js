@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { VStack, Button, Select,  Text } from "@chakra-ui/react";
+import { VStack, Button, Select, Text } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
 const modelMappings = {
@@ -9,28 +9,24 @@ const modelMappings = {
   "Gemma": "google/gemma-3-27b-it:free",
   "Llama": "nvidia/llama-3.1-nemotron-70b-instruct:free",
   "Qwen 3 (235B)": "qwen/qwen3-235b-a22b:free",
-  "Qwen 3 (30B)":"qwen/qwen3-30b-a3b:free",
-  "Qwen 3 (0.6B)":"qwen/qwen3-0.6b-04-28:free",
+  "Qwen 3 (30B)": "qwen/qwen3-30b-a3b:free",
   "Mistral 24B": "mistralai/mistral-small-3.1-24b-instruct:free",
   "Olympric Coder": "open-r1/olympiccoder-32b:free",
-  "ArliAI":"arliai/qwq-32b-arliai-rpr-v1:free",
-  "Microsoft-Phi 4+":"microsoft/phi-4-reasoning-plus:free",
-  "Intern":"opengvlab/internvl3-14b:free",
-  "DeepSeek V2":"deepseek/deepseek-prover-v2:free",
-  "MAI DS R1":"microsoft/mai-ds-r1:free",
-  "Chimera R1T":"tngtech/deepseek-r1t-chimera:free",
-  "GLM Z1 32B":"thudm/glm-z1-32b:free",
-  "GLM 4 32B":"thudm/glm-4-32b:free",
-  "Shisa V2 ":"shisa-ai/shisa-v2-llama3.3-70b:free",
-  "Deepcoder ":"agentica-org/deepcoder-14b-preview:free",
-  "Kimi ":"moonshotai/kimi-vl-a3b-thinking:free",
-  "Llama Maverick":"meta-llama/llama-4-maverick:free",
-  "Llama Scout":"meta-llama/llama-4-scout:free",
-  "Reka Flash 3":"rekaai/reka-flash-3:free",
-  "Mistral Nemo":"mistralai/mistral-nemo:free"
-  
-
-
+  "ArliAI": "arliai/qwq-32b-arliai-rpr-v1:free",
+  "Microsoft-Phi 4+": "microsoft/phi-4-reasoning-plus:free",
+  "Intern": "opengvlab/internvl3-14b:free",
+  "DeepSeek V2": "deepseek/deepseek-prover-v2:free",
+  "MAI DS R1": "microsoft/mai-ds-r1:free",
+  "Chimera R1T": "tngtech/deepseek-r1t-chimera:free",
+  "GLM Z1 32B": "thudm/glm-z1-32b:free",
+  "GLM 4 32B": "thudm/glm-4-32b:free",
+  "Shisa V2 ": "shisa-ai/shisa-v2-llama3.3-70b:free",
+  "Deepcoder ": "agentica-org/deepcoder-14b-preview:free",
+  "Kimi ": "moonshotai/kimi-vl-a3b-thinking:free",
+  "Llama Maverick": "meta-llama/llama-4-maverick:free",
+  "Llama Scout": "meta-llama/llama-4-scout:free",
+  "Reka Flash 3": "rekaai/reka-flash-3:free",
+  "Mistral Nemo": "mistralai/mistral-nemo:free"
 };
 
 const availableModels = Object.keys(modelMappings);
@@ -42,11 +38,11 @@ function AIModelSelector() {
   const [selectedModel, setSelectedModel] = useState("");
 
   const handleAddModel = (event) => {
-    const selectedModel = event.target.value;
-    if (selectedModel && !selectedModels.includes(selectedModel)) {
-      setSelectedModels([...selectedModels, selectedModel]);
-      updateActiveModel(selectedModel);
-      setSelectedModel(""); // Reset dropdown selection
+    const selected = event.target.value;
+    if (selected && !selectedModels.includes(selected)) {
+      setSelectedModels([...selectedModels, selected]);
+      updateActiveModel(selected);
+      setSelectedModel("");
     }
   };
 
@@ -54,10 +50,20 @@ function AIModelSelector() {
     updateActiveModel(model);
   };
 
-  const handleRemoveModel = (model) => {
+  const handleRemoveModel = async (model) => {
     setSelectedModels(selectedModels.filter((m) => m !== model));
+
     if (activeModel === model) {
       setActiveModel(null);
+      try {
+        await fetch("https://ghost-gpt.onrender.com/set_model", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model: null }),
+        });
+      } catch (error) {
+        console.error("Error resetting model:", error);
+      }
     }
   };
 
@@ -91,7 +97,7 @@ function AIModelSelector() {
         _focus={{ borderColor: "white" }}
         sx={{
           option: {
-            background: "black", // Makes dropdown options black
+            background: "black",
             color: "white",
           },
         }}
@@ -110,8 +116,8 @@ function AIModelSelector() {
           key={model}
           w="full"
           border="1px solid"
-          h="32px" // Reduced height
-          py="1"   // Reduced vertical padding
+          h="32px"
+          py="1"
           borderColor={activeModel === model ? "blue.400" : "gray.500"}
           color="white"
           variant="outline"

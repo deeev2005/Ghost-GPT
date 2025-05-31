@@ -62,7 +62,6 @@ const modelSections = [
     models: [
       "DeepSeek R1 Distill Qwen 14B",
       "Meta Llama  Maverick",
-      "Qwen 3 0.6B ",
       "Mistral  24B",
       "Reka Flash 3",
     ],

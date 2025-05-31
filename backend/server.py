@@ -39,7 +39,6 @@ chat_collection = db["ChatHistory"]
 
 # ✅ API Keys
 OPENROUTER_API_KEY = "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"
-print(OPENROUTER_API_KEY)
 
 # ✅ Default model
 selected_model = None
@@ -81,7 +80,7 @@ async def chat(request: ChatRequest):
 
         # ✅ Debug: Show payload
         payload = {"model": selected_model, "messages": messages}
-        print("📤 Sending to OpenRouter:", payload)
+        
 
         # OpenRouter API call
         url = "https://openrouter.ai/api/v1/chat/completions"
@@ -110,7 +109,7 @@ async def chat(request: ChatRequest):
         ai_response = response_json["choices"][0]["message"]["content"]
 
         # ✅ Debug: Print AI response
-        print("🤖 AI response:", ai_response)
+        
 
         # Save to DB
         chat_collection.insert_one({
