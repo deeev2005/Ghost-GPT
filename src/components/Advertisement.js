@@ -21,12 +21,16 @@ export default function Advertisement() {
       left="-16px" 
       mt={6}
     >
-       <Text fontSize="md" fontWeight="bold">
-    🚀 If you don't get any response try 3-5 times and wait for some time to restart the server
-  </Text>
-  <Text fontSize="md" fontWeight="bold" mt={2}>
+      <Box mt={6}>
+  <Text 
+    fontSize="md" 
+    fontWeight="bold"
+    whiteSpace="pre-line"
+  >
+    🚀 If you don't get any response try 3-5 times and wait for some time to restart the server{"\n"}
     🚀 When no model is selected, we'll use the last active model
   </Text>
+</Box>
     </Box>
   );
 }
