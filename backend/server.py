@@ -38,7 +38,7 @@ db = client["AIChatDB"]
 chat_collection = db["ChatHistory"]
 
 # ✅ API Keys
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 
 # ✅ Default model
 selected_model = None
