@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { VStack, Button, Select, Text } from "@chakra-ui/react";
+import { VStack, Button, Select, Text, Alert, AlertIcon } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
 const modelMappings = {
@@ -20,9 +20,9 @@ const modelMappings = {
   "Chimera R1T": "tngtech/deepseek-r1t-chimera:free",
   "GLM Z1 32B": "thudm/glm-z1-32b:free",
   "GLM 4 32B": "thudm/glm-4-32b:free",
-  "Shisa V2 ": "shisa-ai/shisa-v2-llama3.3-70b:free",
-  "Deepcoder ": "agentica-org/deepcoder-14b-preview:free",
-  "Kimi ": "moonshotai/kimi-vl-a3b-thinking:free",
+  "Shisa V2": "shisa-ai/shisa-v2-llama3.3-70b:free",
+  "Deepcoder": "agentica-org/deepcoder-14b-preview:free",
+  "Kimi": "moonshotai/kimi-vl-a3b-thinking:free",
   "Llama Maverick": "meta-llama/llama-4-maverick:free",
   "Llama Scout": "meta-llama/llama-4-scout:free",
   "Reka Flash 3": "rekaai/reka-flash-3:free",
@@ -36,33 +36,33 @@ function AIModelSelector() {
   const [activeModel, setActiveModel] = useState(null);
   const [hoveredModel, setHoveredModel] = useState(null);
   const [selectedModel, setSelectedModel] = useState("");
+  const [showNoModelWarning, setShowNoModelWarning] = useState(false);
 
   const handleAddModel = (event) => {
-    const selected = event.target.value;
-    if (selected && !selectedModels.includes(selected)) {
-      setSelectedModels([...selectedModels, selected]);
-      updateActiveModel(selected);
+    const model = event.target.value;
+    if (model && !selectedModels.includes(model)) {
+      setSelectedModels([...selectedModels, model]);
+      updateActiveModel(model);
       setSelectedModel("");
+      setShowNoModelWarning(false);
     }
   };
 
   const handleSelectModel = (model) => {
     updateActiveModel(model);
+    setShowNoModelWarning(false);
   };
 
-  const handleRemoveModel = async (model) => {
-    setSelectedModels(selectedModels.filter((m) => m !== model));
-
+  const handleRemoveModel = (model) => {
+    const newSelectedModels = selectedModels.filter((m) => m !== model);
+    setSelectedModels(newSelectedModels);
+    
     if (activeModel === model) {
-      setActiveModel(null);
-      try {
-        await fetch("https://ghost-gpt.onrender.com/set_model", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: null }),
-        });
-      } catch (error) {
-        console.error("Error resetting model:", error);
+      if (newSelectedModels.length > 0) {
+        updateActiveModel(newSelectedModels[0]);
+      } else {
+        setActiveModel(null);
+        setShowNoModelWarning(true);
       }
     }
   };
@@ -70,7 +70,7 @@ function AIModelSelector() {
   const updateActiveModel = async (model) => {
     setActiveModel(model);
     const modelID = modelMappings[model];
-
+    
     if (modelID) {
       try {
         await fetch("https://ghost-gpt.onrender.com/set_model", {
@@ -110,6 +110,13 @@ function AIModelSelector() {
             </option>
           ))}
       </Select>
+
+      {showNoModelWarning && (
+        <Alert status="warning" borderRadius="md">
+          <AlertIcon />
+          Please select a model
+        </Alert>
+      )}
 
       {selectedModels.map((model) => (
         <Button
