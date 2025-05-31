@@ -23,6 +23,7 @@ export default function Advertisement() {
     >
       <Text fontSize="md" fontWeight="bold">
         🚀 If you don't get any response try 3-4 times and wait for some time to restart the server
+            Also when no model selected we will use last active model
       </Text>
     </Box>
   );
