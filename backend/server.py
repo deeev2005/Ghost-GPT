@@ -41,7 +41,7 @@ chat_collection = db["ChatHistory"]
 OPENROUTER_API_KEY = "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"
 
 # ✅ Default model
-selected_model = "nousresearch/deephermes-3-mistral-24b-preview:free"
+selected_model = None
 
 # ✅ Request Models
 class ModelRequest(BaseModel):
