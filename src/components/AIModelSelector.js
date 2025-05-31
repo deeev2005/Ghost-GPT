@@ -31,36 +31,38 @@ const modelMappings = {
 
 const availableModels = Object.keys(modelMappings);
 
-function AIModelSelector() {
+function AIModelSelector({ userId }) {
   const [selectedModels, setSelectedModels] = useState([]);
   const [activeModel, setActiveModel] = useState(null);
   const [hoveredModel, setHoveredModel] = useState(null);
   const [selectedModel, setSelectedModel] = useState("");
   const [showNoModelWarning, setShowNoModelWarning] = useState(false);
 
-  const handleAddModel = (event) => {
+  const handleAddModel = async (event) => {
     const model = event.target.value;
     if (model && !selectedModels.includes(model)) {
-      setSelectedModels([...selectedModels, model]);
-      updateActiveModel(model);
+      const newSelectedModels = [...selectedModels, model];
+      setSelectedModels(newSelectedModels);
+      await updateActiveModel(model);
       setSelectedModel("");
       setShowNoModelWarning(false);
     }
   };
 
-  const handleSelectModel = (model) => {
-    updateActiveModel(model);
+  const handleSelectModel = async (model) => {
+    await updateActiveModel(model);
     setShowNoModelWarning(false);
   };
 
-  const handleRemoveModel = (model) => {
+  const handleRemoveModel = async (model) => {
     const newSelectedModels = selectedModels.filter((m) => m !== model);
     setSelectedModels(newSelectedModels);
     
     if (activeModel === model) {
       if (newSelectedModels.length > 0) {
-        updateActiveModel(newSelectedModels[0]);
+        await updateActiveModel(newSelectedModels[0]);
       } else {
+        await updateBackendModel(null);
         setActiveModel(null);
         setShowNoModelWarning(true);
       }
@@ -69,18 +71,22 @@ function AIModelSelector() {
 
   const updateActiveModel = async (model) => {
     setActiveModel(model);
-    const modelID = modelMappings[model];
-    
-    if (modelID) {
-      try {
-        await fetch("https://ghost-gpt.onrender.com/set_model", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: modelID }),
-        });
-      } catch (error) {
-        console.error("Error updating model:", error);
-      }
+    await updateBackendModel(model);
+  };
+
+  const updateBackendModel = async (model) => {
+    const modelID = model ? modelMappings[model] : null;
+    try {
+      await fetch("https://ghost-gpt.onrender.com/set_model", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          model: modelID,
+          user_id: userId  // Include user_id in the request
+        }),
+      });
+    } catch (error) {
+      console.error("Error updating model:", error);
     }
   };
 
