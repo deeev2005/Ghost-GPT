@@ -21,11 +21,12 @@ export default function Advertisement() {
       left="-16px" 
       mt={6}
     >
-      <Text fontSize="md" fontWeight="bold">
-        🚀 If you don't get any response try 3-4 times and wait for some time to restart the server
-         
-          🚀 Also when no model selected we will use last active model
-      </Text>
+       <Text fontSize="md" fontWeight="bold">
+    🚀 If you don't get any response try 3-5 times and wait for some time to restart the server
+  </Text>
+  <Text fontSize="md" fontWeight="bold" mt={2}>
+    🚀 When no model is selected, we'll use the last active model
+  </Text>
     </Box>
   );
 }
