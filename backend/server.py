@@ -40,13 +40,12 @@ chat_collection = db["ChatHistory"]
 # ✅ API Keys
 OPENROUTER_API_KEY = "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"
 
-# ✅ User-specific model storage
-user_models = {}
+# ✅ Default model
+selected_model = None
 
 # ✅ Request Models
 class ModelRequest(BaseModel):
     model: str
-    user_id: str  # Added user_id to track per-user models
 
 class ChatRequest(BaseModel):
     prompt: str
@@ -56,15 +55,14 @@ class ChatRequest(BaseModel):
 # ✅ Set AI model
 @app.post("/set_model")
 async def set_model(request: ModelRequest):
-    user_models[request.user_id] = request.model
-    print(f"✅ Model updated for user {request.user_id}: {request.model}")
-    return {"message": f"Model updated to {request.model}"}
+    global selected_model
+    selected_model = request.model
+    print(f"✅ Model updated to: {selected_model}")
+    return {"message": f"Model updated to {selected_model}"}
 
 # ✅ Handle chat requests
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    selected_model = user_models.get(request.user_id)
-    
     if not selected_model:
         raise HTTPException(status_code=400, detail="No AI model selected!")
 
@@ -80,15 +78,21 @@ async def chat(request: ChatRequest):
             messages.append({"role": "assistant", "content": msg["ai_response"]})
         messages.append({"role": "user", "content": request.prompt})
 
+        # ✅ Debug: Show payload
+        payload = {"model": selected_model, "messages": messages}
+        
+
         # OpenRouter API call
         url = "https://openrouter.ai/api/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
             "Content-Type": "application/json",
         }
-        payload = {"model": selected_model, "messages": messages}
 
         response = requests.post(url, json=payload, headers=headers, timeout=30)
+
+        # ✅ Debug: Print raw response
+        print("🌐 OpenRouter response:", response.status_code, response.text)
 
         if response.status_code == 429:
             raise HTTPException(
@@ -103,6 +107,9 @@ async def chat(request: ChatRequest):
             raise HTTPException(status_code=500, detail="Invalid response from OpenRouter")
 
         ai_response = response_json["choices"][0]["message"]["content"]
+
+        # ✅ Debug: Print AI response
+        
 
         # Save to DB
         chat_collection.insert_one({
