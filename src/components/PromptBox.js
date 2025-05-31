@@ -66,13 +66,13 @@ export default function PromptBox({ setMessages, user }) {
       const data = await response.json();
       setMessages((prev) => [
         ...prev.slice(0, -1),
-        { sender: "ai", text: data.response || "❌ No response received" },
+        { sender: "ai", text: data.response || "❌ Please Select a Model" },
       ]);
     } catch (error) {
       console.error("Error:", error);
       setMessages((prev) => [
         ...prev.slice(0, -1),
-        { sender: "ai", text: "❌ Network error. Try again." },
+        { sender: "ai", text: "❌ Free Limit Reached" },
       ]);
     }
 
