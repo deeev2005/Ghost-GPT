@@ -36,12 +36,10 @@ MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["AIChatDB"]
 chat_collection = db["ChatHistory"]
+user_settings = db["UserSettings"]
 
-# ✅ API Keys
+# ✅ API Keys (it's a free API, you can generate your own)
 OPENROUTER_API_KEY = "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"
-
-# ✅ Default model
-selected_model = None
 
 # ✅ Request Models
 class ModelRequest(BaseModel):
@@ -52,22 +50,29 @@ class ChatRequest(BaseModel):
     user_id: str
     email: str
 
-# ✅ Set AI model
+# ✅ Set AI model for a user (by email)
 @app.post("/set_model")
-async def set_model(request: ModelRequest):
-    global selected_model
-    selected_model = request.model
-    print(f"✅ Model updated to: {selected_model}")
-    return {"message": f"Model updated to {selected_model}"}
+async def set_model(request: ModelRequest, email: str = Query(...)):
+    user_settings.update_one(
+        {"email": email},
+        {"$set": {"selected_model": request.model}},
+        upsert=True
+    )
+    print(f"✅ Model updated to: {request.model} for {email}")
+    return {"message": f"Model updated to {request.model}"}
 
 # ✅ Handle chat requests
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    if not selected_model:
-        raise HTTPException(status_code=400, detail="No AI model selected!")
-
     try:
-        # Fetch last 20 messages for context
+        # ✅ Fetch selected model for this user
+        user = user_settings.find_one({"email": request.email})
+        if not user or "selected_model" not in user:
+            raise HTTPException(status_code=400, detail="No AI model selected!")
+
+        selected_model = user["selected_model"]
+
+        # ✅ Fetch last 20 messages for context
         context_messages = list(
             chat_collection.find({"email": request.email}).sort("timestamp", -1).limit(20)
         )
@@ -80,7 +85,6 @@ async def chat(request: ChatRequest):
 
         # ✅ Debug: Show payload
         payload = {"model": selected_model, "messages": messages}
-        
 
         # OpenRouter API call
         url = "https://openrouter.ai/api/v1/chat/completions"
@@ -97,7 +101,7 @@ async def chat(request: ChatRequest):
         if response.status_code == 429:
             raise HTTPException(
                 status_code=429,
-                detail="API key limit reached. Please try again later or upgrade your OpenRouter plan."
+                detail="API key limit reached."
             )
 
         response.raise_for_status()
@@ -108,10 +112,7 @@ async def chat(request: ChatRequest):
 
         ai_response = response_json["choices"][0]["message"]["content"]
 
-        # ✅ Debug: Print AI response
-        
-
-        # Save to DB
+        # ✅ Save to DB
         chat_collection.insert_one({
             "model": selected_model,
             "user_message": request.prompt,
