@@ -3,6 +3,7 @@ import { VStack, Button, Select, Text, Alert, AlertIcon } from "@chakra-ui/react
 import { CloseIcon } from "@chakra-ui/icons";
 
 const modelMappings = {
+  
   "DeepSeek:R1": "deepseek/deepseek-r1:free",
   "DeepHermes": "nousresearch/deephermes-3-mistral-24b-preview:free",
   "Gemma": "google/gemma-3-27b-it:free",
@@ -30,74 +31,12 @@ const modelMappings = {
 
 const availableModels = Object.keys(modelMappings);
 
-function AIModelSelector({ userId, userEmail }) {
-  // Debug props at component level
-  console.log("🔍 AIModelSelector props:", { userId, userEmail });
-  
+function AIModelSelector({ userId }) {
   const [selectedModels, setSelectedModels] = useState([]);
   const [activeModel, setActiveModel] = useState(null);
+  const [hoveredModel, setHoveredModel] = useState(null);
   const [selectedModel, setSelectedModel] = useState("");
   const [showNoModelWarning, setShowNoModelWarning] = useState(false);
-
-  const updateActiveModel = async (modelName) => {
-    const apiModel = modelMappings[modelName];
-    
-    // Check if userEmail is provided
-    if (!userEmail) {
-      console.error("❌ userEmail is missing or undefined!");
-      console.error("❌ userEmail value:", userEmail);
-      return;
-    }
-    
-    try {
-      console.log("🔄 Updating model to:", apiModel, "for user:", userEmail);
-      
-      const requestBody = { model: apiModel };
-      console.log("📤 Request body:", JSON.stringify(requestBody));
-      console.log("📤 Full URL:", `https://your-backend-url.com/set_model?email=${encodeURIComponent(userEmail)}`);
-      
-      // Replace this URL with your actual backend URL
-      const backendUrl = "https://your-backend-url.com"; // ← CHANGE THIS!
-      const fullUrl = `${backendUrl}/set_model?email=${encodeURIComponent(userEmail)}`;
-      
-      console.log("🌐 Attempting to call:", fullUrl);
-      
-      const response = await fetch(fullUrl,
-        {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify(requestBody)
-        }
-      );
-      
-      console.log("📥 Response status:", response.status);
-      console.log("📥 Response headers:", Object.fromEntries(response.headers.entries()));
-      
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("✅ Success response:", responseData);
-        setActiveModel(modelName);
-        console.log("✅ Model successfully updated to:", modelName);
-      } else {
-        const errorText = await response.text();
-        console.error("❌ Failed to update model. Status:", response.status);
-        console.error("❌ Error response body:", errorText);
-        
-        // Try to parse as JSON to see validation errors
-        try {
-          const errorJson = JSON.parse(errorText);
-          console.error("❌ Parsed error details:", errorJson);
-        } catch (e) {
-          console.error("❌ Could not parse error as JSON");
-        }
-      }
-    } catch (error) {
-      console.error("❌ Network/Request error:", error);
-    }
-  };
 
   const handleAddModel = async (event) => {
     const model = event.target.value;
@@ -115,48 +54,108 @@ function AIModelSelector({ userId, userEmail }) {
     setShowNoModelWarning(false);
   };
 
-  const handleRemoveModel = (model) => {
+  const handleRemoveModel = async (model) => {
     const newSelectedModels = selectedModels.filter((m) => m !== model);
     setSelectedModels(newSelectedModels);
+    
     if (activeModel === model) {
-      const fallback = newSelectedModels[0] || null;
-      setActiveModel(fallback);
-      if (fallback) updateActiveModel(fallback);
+      if (newSelectedModels.length > 0) {
+        await updateActiveModel(newSelectedModels[0]);
+      } else {
+        await updateBackendModel(null);
+        setActiveModel(null);
+        setShowNoModelWarning(true);
+      }
+    }
+  };
+
+  const updateActiveModel = async (model) => {
+    setActiveModel(model);
+    await updateBackendModel(model);
+  };
+
+  const updateBackendModel = async (model) => {
+    const modelID = model ? modelMappings[model] : null;
+    try {
+      await fetch("https://ghost-gpt.onrender.com/set_model", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          model: modelID,
+          user_id: userId  // Include user_id in the request
+        }),
+      });
+    } catch (error) {
+      console.error("Error updating model:", error);
     }
   };
 
   return (
-    <VStack spacing={3}>
-      <Select placeholder="Select AI model" value={selectedModel} onChange={handleAddModel}>
-        {availableModels.map((model) => (
-          <option key={model} value={model}>
-            {model}
-          </option>
-        ))}
+    <VStack spacing={3} align="stretch" w="100%">
+      <Select
+        placeholder="Select AI Model"
+        onChange={handleAddModel}
+        value={selectedModel}
+        bg="background.secondary"
+        color="white"
+        borderColor="gray.500"
+        _hover={{ borderColor: "white" }}
+        _focus={{ borderColor: "white" }}
+        sx={{
+          option: {
+            background: "black",
+            color: "white",
+          },
+        }}
+      >
+        {availableModels
+          .filter((model) => !selectedModels.includes(model))
+          .map((model) => (
+            <option key={model} value={model}>
+              {model}
+            </option>
+          ))}
       </Select>
+
+      {showNoModelWarning && (
+        <Alert status="warning" borderRadius="md" color="black">
+          <AlertIcon />
+          Please select a model
+        </Alert>
+      )}
 
       {selectedModels.map((model) => (
         <Button
           key={model}
-          variant={activeModel === model ? "solid" : "outline"}
-          colorScheme="teal"
+          w="full"
+          border="1px solid"
+          h="32px"
+          py="1"
+          borderColor={activeModel === model ? "blue.400" : "gray.500"}
+          color="white"
+          variant="outline"
           onClick={() => handleSelectModel(model)}
-          rightIcon={<CloseIcon boxSize={2.5} onClick={(e) => {
-            e.stopPropagation();
-            handleRemoveModel(model);
-          }} />}
-          width="100%"
+          _hover={{ background: "blue.400", color: "black" }}
+          boxShadow={activeModel === model ? "0px 0px 10px #8AB4F8" : "none"}
+          position="relative"
+          display="flex"
+          justifyContent="space-between"
+          onMouseEnter={() => setHoveredModel(model)}
+          onMouseLeave={() => setHoveredModel(null)}
         >
-          {model}
+          <Text>{model}</Text>
+          <CloseIcon
+            w={3}
+            h={3}
+            color={hoveredModel === model ? "black" : "white"}
+            transition="color 0.2s"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemoveModel(model);
+            }}
+          />
         </Button>
       ))}
-
-      {showNoModelWarning && (
-        <Alert status="warning">
-          <AlertIcon />
-          Please select a model before sending a message.
-        </Alert>
-      )}
     </VStack>
   );
 }
