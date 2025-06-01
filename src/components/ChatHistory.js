@@ -19,13 +19,7 @@ import { InfoIcon } from "@chakra-ui/icons";
 const modelSections = [
 
 
-  {
-    title: "🖥️ GUI Automation & Interaction",
-    models: [
-      "TARS",
-     
-    ],
-  },
+  
   {
     title: "🧠 Reasoning & Knowledge",
     models: [
@@ -60,7 +54,6 @@ const modelSections = [
   {
     title: "⚡ Speed",
     models: [
-      "DeepSeek R1 Distill Qwen 14B",
       "Meta Llama  Maverick",
       "Mistral  24B",
       "Reka Flash 3",
@@ -73,7 +66,6 @@ const modelSections = [
       "Meta Llama 4 Scout",
       "GLM Z1 32B",
       "Qwen 3 235B ",
-      "ArliAI",
       "Mistral  24B",
     ],
   },
@@ -95,6 +87,7 @@ const modelSections = [
       "GLM 4 32B",
       "DeepSeek R1",
       "Mistral  24B",
+      "Sarvam AI",
     ],
   },
   {
@@ -111,10 +104,10 @@ const modelSections = [
     title: "🧠 Medium to Tough Coding & DSA",
     models: [
       "OlympicCoder 32B",
-      " Deepcoder ",
+      "Deepcoder",
       "DeepSeek R1",
       "DeepSeek Prover V2",
-      "Meta Llama  Scout"
+      "Llama  Scout"
       
     ],
   },
@@ -122,10 +115,10 @@ const modelSections = [
     title: "📈 SEO & Presentation",
     models: [
       "Microsoft Phi-4 Reasoning +",
-      "Meta Llama  Scout",
+      "Llama  Scout",
       "DeepSeek R1",
       "Qwen 3 235B ",
-      "Mistral 24B",
+      
     ],
   },
   {
@@ -143,7 +136,7 @@ const modelSections = [
     models: [
       "Intern",
       "Kimi",
-      "Meta Llama  Scout",
+      "Llama  Scout",
       "Qwen 3 235B ",
       "DeepSeek Prover V2",
     ],

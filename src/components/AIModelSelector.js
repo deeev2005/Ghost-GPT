@@ -3,16 +3,16 @@ import { VStack, Button, Select, Text, Alert, AlertIcon } from "@chakra-ui/react
 import { CloseIcon } from "@chakra-ui/icons";
 
 const modelMappings = {
-  "TARS": "bytedance-research/ui-tars-72b:free",
+  
   "DeepSeek:R1": "deepseek/deepseek-r1:free",
   "DeepHermes": "nousresearch/deephermes-3-mistral-24b-preview:free",
   "Gemma": "google/gemma-3-27b-it:free",
-  "Llama": "nvidia/llama-3.1-nemotron-70b-instruct:free",
+  "Sarvam AI": "sarvamai/sarvam-m:free",
   "Qwen 3 (235B)": "qwen/qwen3-235b-a22b:free",
   "Qwen 3 (30B)": "qwen/qwen3-30b-a3b:free",
-  "Mistral 24B": "mistralai/mistral-small-3.1-24b-instruct:free",
+  "Llama": "meta-llama/llama-3.3-8b-instruct:free",
   "Olympric Coder": "open-r1/olympiccoder-32b:free",
-  "ArliAI": "arliai/qwq-32b-arliai-rpr-v1:free",
+  "Devstral": "mistralai/devstral-small:free",
   "Microsoft-Phi 4+": "microsoft/phi-4-reasoning-plus:free",
   "Intern": "opengvlab/internvl3-14b:free",
   "DeepSeek V2": "deepseek/deepseek-prover-v2:free",
@@ -118,7 +118,7 @@ function AIModelSelector({ userId }) {
       </Select>
 
       {showNoModelWarning && (
-        <Alert status="warning" borderRadius="md">
+        <Alert status="warning" borderRadius="md" color="black">
           <AlertIcon />
           Please select a model
         </Alert>
