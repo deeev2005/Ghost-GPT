@@ -1,6 +1,8 @@
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from pymongo import MongoClient
 from datetime import datetime
@@ -22,6 +24,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ Add exception handler for debugging 422 errors
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print(f"🚨 Validation Error Details:")
+    print(f"   URL: {request.url}")
+    print(f"   Method: {request.method}")
+    print(f"   Headers: {dict(request.headers)}")
+    
+    # Try to get request body
+    try:
+        body = await request.body()
+        print(f"   Request Body: {body.decode('utf-8')}")
+    except Exception as e:
+        print(f"   Could not read body: {e}")
+    
+    print(f"   Validation Errors: {exc.errors()}")
+    
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": exc.errors(),
+            "message": "Validation failed - check server logs for details"
+        }
+    )
+
 # ✅ Root check endpoint
 @app.get("/")
 def read_root():
@@ -39,7 +66,7 @@ chat_collection = db["ChatHistory"]
 user_settings = db["UserSettings"]
 
 # ✅ API Key (use .env securely)
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "s*********"
 
 # ✅ Request Models
 class ModelRequest(BaseModel):
@@ -53,24 +80,40 @@ class ChatRequest(BaseModel):
 # ✅ Set AI model for a user
 @app.post("/set_model")
 async def set_model(request: ModelRequest, email: str = Query(...)):
-    user_settings.update_one(
-        {"email": email},
-        {"$set": {"selected_model": request.model}},
-        upsert=True
-    )
-    print(f"✅ Model updated to: {request.model} for {email}")
-    return {"message": f"Model updated to {request.model}"}
+    print(f"🔧 SET_MODEL called:")
+    print(f"   Email: {email}")
+    print(f"   Model from request: {request.model}")
+    print(f"   Request dict: {request.dict()}")
+    
+    try:
+        result = user_settings.update_one(
+            {"email": email},
+            {"$set": {"selected_model": request.model}},
+            upsert=True
+        )
+        print(f"   MongoDB update result: matched={result.matched_count}, modified={result.modified_count}")
+        print(f"✅ Model updated to: {request.model} for {email}")
+        return {"message": f"Model updated to {request.model}"}
+    except Exception as e:
+        print(f"🚨 Database error in set_model: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 # ✅ Handle chat request
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
+        print(f"🔧 CHAT called for email: {request.email}")
+        
         # ✅ Get selected model for user
         user = user_settings.find_one({"email": request.email})
+        print(f"   User document from DB: {user}")
+        
         if not user or "selected_model" not in user:
+            print(f"🚨 No model found for user: {request.email}")
             raise HTTPException(status_code=400, detail="No AI model selected!")
 
         selected_model = user["selected_model"]
+        print(f"   Using model: {selected_model}")
 
         # ✅ Context: last 20 messages
         context_messages = list(

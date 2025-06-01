@@ -41,24 +41,45 @@ function AIModelSelector({ userId, userEmail }) {
     try {
       console.log("🔄 Updating model to:", apiModel, "for user:", userEmail);
       
+      const requestBody = { model: apiModel };
+      console.log("📤 Request body:", JSON.stringify(requestBody));
+      console.log("📤 Full URL:", `https://your-backend-url.com/set_model?email=${encodeURIComponent(userEmail)}`);
+      
       const response = await fetch(
         `https://your-backend-url.com/set_model?email=${encodeURIComponent(userEmail)}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: apiModel })
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(requestBody)
         }
       );
       
+      console.log("📥 Response status:", response.status);
+      console.log("📥 Response headers:", Object.fromEntries(response.headers.entries()));
+      
       if (response.ok) {
+        const responseData = await response.json();
+        console.log("✅ Success response:", responseData);
         setActiveModel(modelName);
         console.log("✅ Model successfully updated to:", modelName);
       } else {
         const errorText = await response.text();
-        console.error("❌ Failed to update model. Status:", response.status, "Error:", errorText);
+        console.error("❌ Failed to update model. Status:", response.status);
+        console.error("❌ Error response body:", errorText);
+        
+        // Try to parse as JSON to see validation errors
+        try {
+          const errorJson = JSON.parse(errorText);
+          console.error("❌ Parsed error details:", errorJson);
+        } catch (e) {
+          console.error("❌ Could not parse error as JSON");
+        }
       }
     } catch (error) {
-      console.error("❌ Error updating model:", error);
+      console.error("❌ Network/Request error:", error);
     }
   };
 
