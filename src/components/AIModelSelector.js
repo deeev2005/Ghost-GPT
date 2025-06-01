@@ -45,8 +45,13 @@ function AIModelSelector({ userId, userEmail }) {
       console.log("📤 Request body:", JSON.stringify(requestBody));
       console.log("📤 Full URL:", `https://your-backend-url.com/set_model?email=${encodeURIComponent(userEmail)}`);
       
-      const response = await fetch(
-        `https://your-backend-url.com/set_model?email=${encodeURIComponent(userEmail)}`,
+      // Replace this URL with your actual backend URL
+      const backendUrl = "https://your-backend-url.com"; // ← CHANGE THIS!
+      const fullUrl = `${backendUrl}/set_model?email=${encodeURIComponent(userEmail)}`;
+      
+      console.log("🌐 Attempting to call:", fullUrl);
+      
+      const response = await fetch(fullUrl,
         {
           method: "POST",
           headers: { 
