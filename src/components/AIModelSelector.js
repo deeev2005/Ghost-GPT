@@ -3,7 +3,6 @@ import { VStack, Button, Select, Text, Alert, AlertIcon } from "@chakra-ui/react
 import { CloseIcon } from "@chakra-ui/icons";
 
 const modelMappings = {
-  
   "DeepSeek:R1": "deepseek/deepseek-r1:free",
   "DeepHermes": "nousresearch/deephermes-3-mistral-24b-preview:free",
   "Gemma": "google/gemma-3-27b-it:free",
@@ -57,7 +56,7 @@ function AIModelSelector({ userId }) {
   const handleRemoveModel = async (model) => {
     const newSelectedModels = selectedModels.filter((m) => m !== model);
     setSelectedModels(newSelectedModels);
-    
+
     if (activeModel === model) {
       if (newSelectedModels.length > 0) {
         await updateActiveModel(newSelectedModels[0]);
@@ -77,12 +76,11 @@ function AIModelSelector({ userId }) {
   const updateBackendModel = async (model) => {
     const modelID = model ? modelMappings[model] : null;
     try {
-      await fetch("https://ghost-gpt.onrender.com/set_model", {
+      await fetch(`https://ghost-gpt.onrender.com/set_model?email=${encodeURIComponent(userId)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          model: modelID,
-          user_id: userId  // Include user_id in the request
+        body: JSON.stringify({
+          model: modelID
         }),
       });
     } catch (error) {
