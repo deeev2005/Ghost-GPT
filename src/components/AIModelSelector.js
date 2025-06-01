@@ -31,6 +31,9 @@ const modelMappings = {
 const availableModels = Object.keys(modelMappings);
 
 function AIModelSelector({ userId, userEmail }) {
+  // Debug props at component level
+  console.log("🔍 AIModelSelector props:", { userId, userEmail });
+  
   const [selectedModels, setSelectedModels] = useState([]);
   const [activeModel, setActiveModel] = useState(null);
   const [selectedModel, setSelectedModel] = useState("");
@@ -38,6 +41,14 @@ function AIModelSelector({ userId, userEmail }) {
 
   const updateActiveModel = async (modelName) => {
     const apiModel = modelMappings[modelName];
+    
+    // Check if userEmail is provided
+    if (!userEmail) {
+      console.error("❌ userEmail is missing or undefined!");
+      console.error("❌ userEmail value:", userEmail);
+      return;
+    }
+    
     try {
       console.log("🔄 Updating model to:", apiModel, "for user:", userEmail);
       
