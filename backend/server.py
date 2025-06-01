@@ -39,7 +39,7 @@ chat_collection = db["ChatHistory"]
 user_settings = db["UserSettings"]
 
 # ✅ API Key (keep it in .env)
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = "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"
 
 # ✅ Request Models
 class ModelRequest(BaseModel):
