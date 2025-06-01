@@ -39,6 +39,8 @@ function AIModelSelector({ userId, userEmail }) {
   const updateActiveModel = async (modelName) => {
     const apiModel = modelMappings[modelName];
     try {
+      console.log("🔄 Updating model to:", apiModel, "for user:", userEmail);
+      
       const response = await fetch(
         `https://your-backend-url.com/set_model?email=${encodeURIComponent(userEmail)}`,
         {
@@ -47,8 +49,13 @@ function AIModelSelector({ userId, userEmail }) {
           body: JSON.stringify({ model: apiModel })
         }
       );
+      
       if (response.ok) {
         setActiveModel(modelName);
+        console.log("✅ Model successfully updated to:", modelName);
+      } else {
+        const errorText = await response.text();
+        console.error("❌ Failed to update model. Status:", response.status, "Error:", errorText);
       }
     } catch (error) {
       console.error("❌ Error updating model:", error);
