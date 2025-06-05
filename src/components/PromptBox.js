@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, Button, HStack, Image, Textarea } from "@chakra-ui/react";
 
-export default function PromptBox({ setMessages, user }) {
+export default function PromptBox({ setMessages, user, currentModel }) {  // ✅ Added currentModel prop
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef(null);
@@ -44,6 +44,18 @@ export default function PromptBox({ setMessages, user }) {
 
   const handleSend = async () => {
     if (!prompt.trim()) return;
+    
+    // ✅ Check if model is selected
+    if (!currentModel) {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "user", text: prompt },
+        { sender: "ai", text: "❌ Please Select a Model First" },
+      ]);
+      setPrompt("");
+      return;
+    }
+
     setLoading(true);
 
     setMessages((prev) => [
@@ -60,6 +72,7 @@ export default function PromptBox({ setMessages, user }) {
           prompt,
           user_id: user?.sub || "anonymous",
           email: user?.email || "unknown",
+          model: currentModel,  // ✅ Added model field
         }),
       });
 
