@@ -48,7 +48,7 @@ class ChatRequest(BaseModel):
     prompt: str
     user_id: str
     email: str
-    model: str  # ✅ Added model field
+    model: str = None  # ✅ Made model field optional
 
 # ✅ Set AI model (kept for backward compatibility)
 @app.post("/set_model")
@@ -60,7 +60,10 @@ async def set_model(request: ModelRequest):
 # ✅ Handle chat requests
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    if not request.model:
+    # Use provided model or default fallback
+    model_to_use = request.model or "deepseek/deepseek-r1:free"
+    
+    if not model_to_use:
         raise HTTPException(status_code=400, detail="No AI model provided!")
 
     try:
@@ -76,7 +79,7 @@ async def chat(request: ChatRequest):
         messages.append({"role": "user", "content": request.prompt})
 
         # ✅ Debug: Show payload
-        payload = {"model": request.model, "messages": messages}
+        payload = {"model": model_to_use, "messages": messages}
         
 
         # OpenRouter API call
@@ -110,7 +113,7 @@ async def chat(request: ChatRequest):
 
         # Save to DB
         chat_collection.insert_one({
-            "model": request.model,  # ✅ Use request.model instead of global variable
+            "model": model_to_use,  # ✅ Use model_to_use instead of request.model
             "user_message": request.prompt,
             "ai_response": ai_response,
             "timestamp": datetime.utcnow(),
