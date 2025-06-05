@@ -31,7 +31,7 @@ const modelMappings = {
 
 const availableModels = Object.keys(modelMappings);
 
-function AIModelSelector({ userId }) {
+function AIModelSelector({ userId, onModelChange }) {  // ✅ Added onModelChange prop
   const [selectedModels, setSelectedModels] = useState([]);
   const [activeModel, setActiveModel] = useState(null);
   const [hoveredModel, setHoveredModel] = useState(null);
@@ -62,8 +62,11 @@ function AIModelSelector({ userId }) {
       if (newSelectedModels.length > 0) {
         await updateActiveModel(newSelectedModels[0]);
       } else {
-        await updateBackendModel(null);
         setActiveModel(null);
+        // ✅ Notify parent component that no model is selected
+        if (onModelChange) {
+          onModelChange(null);
+        }
         setShowNoModelWarning(true);
       }
     }
@@ -71,6 +74,10 @@ function AIModelSelector({ userId }) {
 
   const updateActiveModel = async (model) => {
     setActiveModel(model);
+    // ✅ Notify parent component of model change
+    if (onModelChange) {
+      onModelChange(model ? modelMappings[model] : null);
+    }
     await updateBackendModel(model);
   };
 
@@ -89,6 +96,16 @@ function AIModelSelector({ userId }) {
       console.error("Error updating model:", error);
     }
   };
+
+  // ✅ Function to get current active model (for external access)
+  const getCurrentModel = () => {
+    return activeModel ? modelMappings[activeModel] : null;
+  };
+
+  // ✅ Expose getCurrentModel function to parent component
+  React.useImperativeHandle(React.forwardRef(() => {}), () => ({
+    getCurrentModel
+  }));
 
   return (
     <VStack spacing={3} align="stretch" w="100%">

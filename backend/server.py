@@ -40,9 +40,6 @@ chat_collection = db["ChatHistory"]
 # ✅ API Keys
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# ✅ Default model
-selected_model = None
-
 # ✅ Request Models
 class ModelRequest(BaseModel):
     model: str
@@ -51,20 +48,20 @@ class ChatRequest(BaseModel):
     prompt: str
     user_id: str
     email: str
+    model: str  # ✅ Added model field
 
-# ✅ Set AI model
+# ✅ Set AI model (kept for backward compatibility)
 @app.post("/set_model")
 async def set_model(request: ModelRequest):
-    global selected_model
-    selected_model = request.model
-    print(f"✅ Model updated to: {selected_model}")
-    return {"message": f"Model updated to {selected_model}"}
+    # This endpoint is kept for compatibility but doesn't affect global state
+    print(f"✅ Model selection request received: {request.model}")
+    return {"message": f"Model selection acknowledged: {request.model}"}
 
 # ✅ Handle chat requests
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    if not selected_model:
-        raise HTTPException(status_code=400, detail="No AI model selected!")
+    if not request.model:
+        raise HTTPException(status_code=400, detail="No AI model provided!")
 
     try:
         # Fetch last 20 messages for context
@@ -79,7 +76,7 @@ async def chat(request: ChatRequest):
         messages.append({"role": "user", "content": request.prompt})
 
         # ✅ Debug: Show payload
-        payload = {"model": selected_model, "messages": messages}
+        payload = {"model": request.model, "messages": messages}
         
 
         # OpenRouter API call
@@ -113,7 +110,7 @@ async def chat(request: ChatRequest):
 
         # Save to DB
         chat_collection.insert_one({
-            "model": selected_model,
+            "model": request.model,  # ✅ Use request.model instead of global variable
             "user_message": request.prompt,
             "ai_response": ai_response,
             "timestamp": datetime.utcnow(),
