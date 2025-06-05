@@ -43,6 +43,8 @@ const theme = extendTheme({
 function App() {
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [currentModel, setCurrentModel] = useState(null); // ✅ Add this state
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -63,6 +65,16 @@ function App() {
     localStorage.removeItem("user");
   };
 
+  const handleModelSelect = (model) => {
+    setSelectedModel(model);
+  };
+
+  // ✅ Handle model selection
+  const handleModelChange = (model) => {
+    setCurrentModel(model);
+    console.log("✅ Model selected:", model);
+  };
+
   return (
     <ChakraProvider theme={theme}>
       <Box 
@@ -80,9 +92,12 @@ function App() {
           borderRight="1px solid #2a2a2a"
           p={4}
         >
-          {/* AI Model Selector - Using the original component */}
+          {/* AI Model Selector - Now with proper props */}
           <Box mb={6} mt={6}>
-            <AIModelSelector />
+            <AIModelSelector 
+              userId={user?.sub}
+              onModelChange={handleModelChange} // ✅ Pass the handler
+            />
           </Box>
           
           {/* Original Chat History Component */}
@@ -119,14 +134,16 @@ function App() {
                   align="center" 
                   h="full"
                 >
-                  <Text color="gray.500">Ghost GPT</Text>
+                  <Text color="gray.500">
+                    {currentModel ? "Ghost GPT" : "Please select a model to start chatting"}
+                  </Text>
                 </Flex>
               )}
               <AIResponseBox messages={messages} />
             </Box>
           </Box>
 
-          {/* Message input - Using the original PromptBox component */}
+          {/* Message input - Now with currentModel prop */}
           <Box 
             mb={5}
             mt={20}
@@ -146,7 +163,11 @@ function App() {
                 }
               }}
             >
-              <PromptBox setMessages={setMessages} user={user} />
+              <PromptBox 
+                setMessages={setMessages} 
+                user={user}
+                currentModel={currentModel} // ✅ Pass the current model
+              />
             </Box>
           </Box>
         </Box>
